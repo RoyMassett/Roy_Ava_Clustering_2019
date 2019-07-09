@@ -1,0 +1,546 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# we will use the pandas module because it allows us to work with R-like dataframes\n",
+    "import pandas as pd\n",
+    "\n",
+    "# often we need some functions from numpy as well\n",
+    "import numpy as np\n",
+    "\n",
+    "# the next two lines will force jypyter to output all results from a cell (by default only the last one is shown)\n",
+    "# using semicolon (;) in the end of a line will force that line not to output the result\n",
+    "from IPython.core.interactiveshell import InteractiveShell\n",
+    "InteractiveShell.ast_node_interactivity = \"all\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# You can create a dataframe from scratch if you want to\n",
+    "# (although probably rarely need it during this course)\n",
+    "# you have to specify column names and data\n",
+    "df = pd.DataFrame({ 'A' : 1.,\n",
+    "                    'B' : pd.Timestamp('20130102'),\n",
+    "                    'C' : pd.Series([1,2,3,4],dtype='int32'), # you can be very specific about the data types\n",
+    "                    'D' : [4,2,3,4], # if you are not, pandas will try to guess\n",
+    "                    'E' : pd.Categorical([\"test\",\"train\",\"test\",\"train\"]),\n",
+    "                    'F' : [\"test\", \"train\", \"test\", \"train\"],\n",
+    "                    'G' : 'foo' })"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>A</th>\n",
+       "      <th>B</th>\n",
+       "      <th>C</th>\n",
+       "      <th>D</th>\n",
+       "      <th>E</th>\n",
+       "      <th>F</th>\n",
+       "      <th>G</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>test</td>\n",
+       "      <td>test</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>2</td>\n",
+       "      <td>2</td>\n",
+       "      <td>train</td>\n",
+       "      <td>train</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>test</td>\n",
+       "      <td>test</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>train</td>\n",
+       "      <td>train</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     A          B  C  D      E      F    G\n",
+       "0  1.0 2013-01-02  1  4   test   test  foo\n",
+       "1  1.0 2013-01-02  2  2  train  train  foo\n",
+       "2  1.0 2013-01-02  3  3   test   test  foo\n",
+       "3  1.0 2013-01-02  4  4  train  train  foo"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>A</th>\n",
+       "      <th>B</th>\n",
+       "      <th>C</th>\n",
+       "      <th>D</th>\n",
+       "      <th>E</th>\n",
+       "      <th>F</th>\n",
+       "      <th>G</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>test</td>\n",
+       "      <td>test</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2013-01-02</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>train</td>\n",
+       "      <td>train</td>\n",
+       "      <td>foo</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     A          B  C  D      E      F    G\n",
+       "2  1.0 2013-01-02  3  3   test   test  foo\n",
+       "3  1.0 2013-01-02  4  4  train  train  foo"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "(4, 7)"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>A</th>\n",
+       "      <th>C</th>\n",
+       "      <th>D</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>count</th>\n",
+       "      <td>4.0</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>mean</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2.500000</td>\n",
+       "      <td>3.250000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>std</th>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1.290994</td>\n",
+       "      <td>0.957427</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>min</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>2.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25%</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>1.750000</td>\n",
+       "      <td>2.750000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>50%</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>2.500000</td>\n",
+       "      <td>3.500000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>75%</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>3.250000</td>\n",
+       "      <td>4.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>max</th>\n",
+       "      <td>1.0</td>\n",
+       "      <td>4.000000</td>\n",
+       "      <td>4.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         A         C         D\n",
+       "count  4.0  4.000000  4.000000\n",
+       "mean   1.0  2.500000  3.250000\n",
+       "std    0.0  1.290994  0.957427\n",
+       "min    1.0  1.000000  2.000000\n",
+       "25%    1.0  1.750000  2.750000\n",
+       "50%    1.0  2.500000  3.500000\n",
+       "75%    1.0  3.250000  4.000000\n",
+       "max    1.0  4.000000  4.000000"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# you can see information about the data in different ways\n",
+    "df.head() # first rows\n",
+    "df.tail(2) # last rows\n",
+    "df.shape # dimensions\n",
+    "df.describe() # summary statistics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "5    2\n",
+       "6    1\n",
+       "4    1\n",
+       "2    1\n",
+       "1    1\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "4    2\n",
+       "3    1\n",
+       "2    1\n",
+       "Name: D, dtype: int64"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "4    2\n",
+       "3    1\n",
+       "2    1\n",
+       "Name: D, dtype: int64"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# we can also create series - all dataframe columns are also series\n",
+    "s = pd.Series([1,5,2,6,4,5])\n",
+    "\n",
+    "# and we can count different values in there\n",
+    "s.value_counts()\n",
+    "\n",
+    "# as already said, we can do this also on the columns of dataframes\n",
+    "# (these two commands are identical)\n",
+    "df[\"D\"].value_counts()\n",
+    "df.D.value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sepal_length</th>\n",
+       "      <th>sepal_width</th>\n",
+       "      <th>petal_length</th>\n",
+       "      <th>petal_width</th>\n",
+       "      <th>species</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>5.1</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>Iris-setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>4.9</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>Iris-setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>4.7</td>\n",
+       "      <td>3.2</td>\n",
+       "      <td>1.3</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>Iris-setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4.6</td>\n",
+       "      <td>3.1</td>\n",
+       "      <td>1.5</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>Iris-setosa</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5.0</td>\n",
+       "      <td>3.6</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>Iris-setosa</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   sepal_length  sepal_width  petal_length  petal_width      species\n",
+       "0           5.1          3.5           1.4          0.2  Iris-setosa\n",
+       "1           4.9          3.0           1.4          0.2  Iris-setosa\n",
+       "2           4.7          3.2           1.3          0.2  Iris-setosa\n",
+       "3           4.6          3.1           1.5          0.2  Iris-setosa\n",
+       "4           5.0          3.6           1.4          0.2  Iris-setosa"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "(150, 5)"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "5.843333333333334"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "sepal_length    5.843333\n",
+       "sepal_width     3.054000\n",
+       "petal_length    3.777181\n",
+       "petal_width     1.212162\n",
+       "dtype: float64"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "# you can read directly from an URL as well\n",
+    "irisdf = pd.read_csv(\"https://courses.cs.ut.ee/MTAT.03.227/2018_spring/uploads/Main/iris.csv\", header = None)\n",
+    "\n",
+    "# we can assign (new) column names, it goes from left to right\n",
+    "irisdf.columns = [\"sepal_length\", \"sepal_width\", \"petal_length\", \"petal_width\", \"species\"]\n",
+    "\n",
+    "# see the data, this is it actually depicted\n",
+    "irisdf.head()\n",
+    "\n",
+    "# data size, this gives the dimensions in a sense (down, across)\n",
+    "irisdf.shape\n",
+    "\n",
+    "# ask for specific statistic of a column, gives state on 'sepal_length'\n",
+    "irisdf.sepal_length.mean()\n",
+    "\n",
+    "# or of all columns, a little summary of what is happening\n",
+    "irisdf.mean()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
